@@ -1,0 +1,35 @@
+{
+  "name": "cache-polyfill",
+  "version": "1.0.0",
+  "description": "cache polyfill, Offline storage, Wraps IndexedDB, without https/ssl",
+  "main": "dist/cache.min.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-plugin-async-to-promises": "^1.0.5",
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "webpack": "^4.7.0",
+    "webpack-cli": "^2.1.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jimmywarting/cache-polyfill.git"
+  },
+  "keywords": [
+    "f",
+    "f"
+  ],
+  "author": "Jimmy Wärting",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jimmywarting/cache-polyfill/issues"
+  },
+  "homepage": "https://github.com/jimmywarting/cache-polyfill#readme"
+}
