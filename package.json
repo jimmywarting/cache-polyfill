@@ -23,8 +23,10 @@
     "url": "git+https://github.com/jimmywarting/cache-polyfill.git"
   },
   "keywords": [
-    "f",
-    "f"
+    "cache",
+    "polyfill",
+    "Offline storage",
+    "IndexedDB"
   ],
   "author": "Jimmy Wärting",
   "license": "MIT",
