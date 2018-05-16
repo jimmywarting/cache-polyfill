@@ -1,12 +1,13 @@
 {
   "name": "cache-polyfill",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "cache polyfill, Offline storage, Wraps IndexedDB, without https/ssl",
   "main": "dist/cache.min.js",
   "directories": {
     "test": "test"
   },
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
     "babel-plugin-async-to-promises": "^1.0.5",
@@ -14,7 +15,6 @@
     "webpack": "^4.7.0",
     "webpack-cli": "^2.1.2"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
