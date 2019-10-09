@@ -10,8 +10,17 @@ export default {
 
     pluginBabel({
       exclude: /node_modules/,
-      presets: ['@babel/preset-env'],
-      plugins: ['babel-plugin-async-to-promises'],
+
+      presets: [
+        [
+          '@babel/preset-env',
+          {
+            exclude: ['transform-async-to-generator', 'transform-regenerator'],
+          },
+        ],
+      ],
+
+      plugins: ['babel-plugin-transform-async-to-promises'],
     }),
 
     pluginTerser(),
