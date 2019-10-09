@@ -8,6 +8,8 @@
   },
   "devDependencies": {
     "@babel/core": "7.6.3",
+    "@babel/preset-env": "7.6.3",
+    "babel-plugin-transform-async-to-promises": "0.8.14",
     "rollup": "1.23.1",
     "rollup-plugin-babel": "4.3.3",
     "rollup-plugin-commonjs": "10.1.0",
@@ -31,9 +33,5 @@
   "bugs": {
     "url": "https://github.com/jimmywarting/cache-polyfill/issues"
   },
-  "homepage": "https://github.com/jimmywarting/cache-polyfill#readme",
-  "dependencies": {
-    "@babel/preset-env": "7.6.3",
-    "babel-plugin-transform-async-to-promises": "0.8.14"
-  }
+  "homepage": "https://github.com/jimmywarting/cache-polyfill#readme"
 }
