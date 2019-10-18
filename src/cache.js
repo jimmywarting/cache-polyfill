@@ -2,20 +2,20 @@ const map = new WeakMap()
 const wm = o => map.get(o)
 
 const requires = (i, args) => {
-  if (args.length < i)
+  if (args.length < i) {
     throw new TypeError(`${i} argument required, but only ${args.length} present.`)
+  }
 }
 
 const isReq = req => req && req instanceof Request
-const isRes = res => res && res instanceof Response
 
-function openDB() {
+function openDB () {
   return new Promise(rs => {
     // Open (or create) the database
     const open = indexedDB.open('cachestorage', 4)
     // Create the schema
     open.onupgradeneeded = () => {
-      const db = open.result;
+      const db = open.result
       // cointains all storage containsers
       db.createObjectStore('storages', { keyPath: 'cacheName' })
       // contains all cache of request and responses
@@ -25,13 +25,13 @@ function openDB() {
 
     open.onsuccess = () => {
       // Start a new transaction
-      rs(open.result);
+      rs(open.result)
     }
   })
 }
 
 class Cache {
-  constructor(cacheName) {
+  constructor (cacheName) {
     map.set(this, cacheName)
   }
 
@@ -42,13 +42,13 @@ class Cache {
    * @param  {[type]}  args [description]
    * @return {Promise}      [description]
    */
-  async match(...args) {
+  async match (...args) {
     return (await this.matchAll(...args))[0]
   }
 
   // Returns a Promise that resolves to an array
   // of all matching requests in the Cache object.
-  async matchAll(req, options = {}) {
+  async matchAll (req, options = {}) {
     if (req.method === 'HEAD') return []
 
     const cacheName = wm(this)
@@ -59,9 +59,9 @@ class Cache {
     const tx = db.transaction('caches', 'readonly')
     const caches = tx.objectStore('caches')
     const index = caches.index('cacheName')
-    const request = index.openCursor(IDBKeyRange.only(cacheName));
-    request.onsuccess = function() {
-      let cursor = this.result;
+    const request = index.openCursor(IDBKeyRange.only(cacheName))
+    request.onsuccess = function () {
+      const cursor = this.result
 
       if (cursor) {
         if ((req.url || req) === cursor.value.reqUrl) {
@@ -72,7 +72,7 @@ class Cache {
           const res = new Response(cursor.value.body, initData)
           result.push(res)
         }
-        cursor.continue();
+        cursor.continue()
       }
     }
 
@@ -84,14 +84,14 @@ class Cache {
   // Takes a URL, retrieves it and adds the resulting response
   // object to the given cache. This is fuctionally equivalent
   // to calling fetch(), then using put() to add the results to the cache
-  async add(request) {
+  async add (request) {
     requires(1, arguments)
     return this.addAll([request])
   }
 
   // Takes an array of URLs, retrieves them, and adds the
   // resulting response objects to the given cache.
-  async addAll(requests) {
+  async addAll (requests) {
     requires(1, arguments)
 
     let results = []
@@ -99,20 +99,24 @@ class Cache {
     for (let req of requests) {
       req = new Request(req)
 
-      if (!/^((http|https):\/\/)/.test(req.url))
+      if (!/^((http|https):\/\/)/.test(req.url)) {
         throw new TypeError(`Add/AddAll does not support schemes other than "http" or "https"`)
+      }
 
-      if (req.method !== 'GET')
+      if (req.method !== 'GET') {
         throw new TypeError(`Add/AddAll only supports the GET request method`)
+      }
 
-      let clone = req.clone()
+      const clone = req.clone()
 
-      await fetch(req).then(res => {
-        if (res.status === 206)
+      await fetch(clone).then(res => {
+        if (res.status === 206) {
           throw new TypeError('Partial response (status code 206) is unsupported')
+        }
 
-        if (!res.ok)
+        if (!res.ok) {
           throw new TypeError('Request failed')
+        }
 
         results.push([req, res])
       })
@@ -121,7 +125,6 @@ class Cache {
     await Promise.all(results.map(a => this.put(...a)))
   }
 
-
   /**
    * Takes both a request and its response and adds it to the given cache.
    *
@@ -129,30 +132,34 @@ class Cache {
    * @param  {Response}        res  [description]
    * @return {Promise}              [description]
    */
-  async put(req, res) {
+  async put (req, res) {
     requires(2, arguments)
 
     req = isReq(req) ? req : new Request(req)
 
     await this.delete(req)
 
-    if (!/^((http|https):\/\/)/.test(req.url))
+    if (!/^((http|https):\/\/)/.test(req.url)) {
       throw new TypeError(`Request scheme '${req.url.split(':')[0]}' is unsupported`)
+    }
 
-    if (req.method !== 'GET')
+    if (req.method !== 'GET') {
       throw new TypeError(`Request method '${req.method}' is unsupported`)
+    }
 
-    if (res.status === 206)
+    if (res.status === 206) {
       throw new TypeError('Partial response (status code 206) is unsupported')
+    }
 
     let varyHeaders = res.headers.get('Vary')
 
-    if (varyHeaders && varyHeaders.includes('*'))
+    if (varyHeaders && varyHeaders.includes('*')) {
       throw new TypeError('Vary header contains *')
+    }
 
-    if (res.body != null)
-      if (res.bodyUsed)
-        throw new TypeError('Response body is already used')
+    if (res.body != null && res.bodyUsed) {
+      throw new TypeError('Response body is already used')
+    }
 
     let folder = wm(this)
     let cache = {
@@ -161,8 +168,8 @@ class Cache {
       status: res.status,
       statusText: res.statusText,
       body: await res.arrayBuffer(),
-      reqUrl: req.url.replace(/#.*$/,''),
-      resUrl: res.url.replace(/#.*$/,''),
+      reqUrl: req.url.replace(/#.*$/, ''),
+      resUrl: res.url.replace(/#.*$/, ''),
       reqMethod: req.method
     }
 
@@ -173,46 +180,48 @@ class Cache {
       const store = tx.objectStore('caches')
 
       // Add some data
-      store.put(cache);
+      store.put(cache)
 
       tx.oncomplete = () => rs()
-      tx.onerror = () => rj(transaction.error)
+      tx.onerror = () => rj(tx.error)
     })
   }
 
   // Finds the Cache entry whose key is the request, and if found,
   // deletes the Cache entry and returns a Promise that resolves to true.
   // If no Cache entry is found, it returns false.
-  async delete(request, options = {}) {
+  async delete (request, options = {}) {
     requires(1, arguments)
     const cacheName = wm(this)
 
     const { ignoreMethod } = options
     const r = isReq(request) ? request : new Request(request)
-    if (!['GET', 'HEAD'].includes(r.method) && ignoreMethod)
+
+    if (!['GET', 'HEAD'].includes(r.method) && ignoreMethod) {
       return false
+    }
 
     const { method } = r
-    const url = r.url.replace(/#.*$/,'')
+    const url = r.url.replace(/#.*$/, '')
     const db = await openDB()
 
     // Start a new transaction
     const tx = db.transaction('caches', 'readwrite')
     const caches = tx.objectStore('caches')
     const index = caches.index('cacheName')
-    const query = index.openCursor(IDBKeyRange.only(cacheName));
+    const query = index.openCursor(IDBKeyRange.only(cacheName))
 
     let deleted = false
 
-    query.onsuccess = function() {
-      const cursor = this.result;
+    query.onsuccess = function () {
+      const cursor = this.result
 
       if (cursor) {
         if (url === cursor.value.reqUrl && (ignoreMethod || method === cursor.value.reqMethod)) {
           deleted = true
           caches.delete(cursor.primaryKey)
         }
-        cursor.continue();
+        cursor.continue()
       }
     }
 
@@ -222,7 +231,7 @@ class Cache {
   }
 
   // Returns a Promise that resolves to an array of Cache keys.
-  async keys(request, options = {}) {
+  async keys (request, options = {}) {
     let url
     const folder = wm(this)
     const {
@@ -255,7 +264,7 @@ class Cache {
     const responses = await new Promise(rs => {
       const tx = db.transaction('caches', 'readonly')
       const store = tx.objectStore('caches')
-      const cacheName = store.index('cacheName');
+      const cacheName = store.index('cacheName')
       const request = cacheName.getAll(IDBKeyRange.only(folder))
       request.onsuccess = () => rs(request.result)
     })

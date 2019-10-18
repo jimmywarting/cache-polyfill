@@ -7,7 +7,7 @@ This is for you who don't have a ssl or need to support older browser.
 ## Example Usage
 
 ```js
-import {Cache, CacheStorage, caches} from 'cache-polyfill'
+import { Cache, CacheStorage, caches } from 'cache-polyfill'
 // import 'whatwg-fetch'
 
 // example usage:
@@ -18,7 +18,7 @@ caches.open('v1').then(function(cache) {
     '/asset/gallery/bountyHunters.jpg',
     '/asset/gallery/myLittleVader.jpg',
     '/asset/gallery/snowTroopers.jpg'
-  ]);
+  ])
 })
 
 const request = new Request('/asset/component.tpl')
@@ -27,7 +27,7 @@ caches.match(request).then(response => {
     caches.open('v1').then(cache =>
       cache.put(event.request, response)
     )
-    return response.clone();
+    return response.clone()
   })
 })
 ```

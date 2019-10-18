@@ -2,7 +2,7 @@ const isRes = x => x instanceof Response
 const isReq = x => x instanceof Request
 
 describe('cache-add', () => {
-  const {Cache, CacheStorage, caches} = cachePolyfill
+  const { Cache, CacheStorage, caches } = cachePolyfill
 
   beforeEach(() => caches.delete('v1'))
   it('Cache.add called with no arguments', async () => {
@@ -12,12 +12,12 @@ describe('cache-add', () => {
   })
 
   it('Cache.add called with absolute URL specified as a string', async () => {
-    let cache = await caches.open('v1')
-    let result = await cache.add('https://httpbin.org/get?echo=foo')
+    const cache = await caches.open('v1')
+    const result = await cache.add('https://httpbin.org/get?echo=foo')
     console.assert(result === undefined, 'Cache.add should resolve with undefined on success.')
-    let response = await cache.match('https://httpbin.org/get?echo=foo')
+    const response = await cache.match('https://httpbin.org/get?echo=foo')
     console.assert(isRes(response), 'Cache.add should put a resource in the cache.');
-    let body = await response.json()
+    const body = await response.json()
     console.assert(body.args.echo === 'foo', 'Cache.add should retrieve the correct body.')
   })
 
@@ -35,15 +35,15 @@ describe('cache-add', () => {
   })
 
   it('Cache.add called with POST request', async () => {
-    let cache = await caches.open('v1')
-    var request = new Request('https://httpbin.org/get', {method: 'POST', body: 'This is a body.'})
-    let result = await cache.add(request).catch(a => a)
+    const cache = await caches.open('v1')
+    const request = new Request('https://httpbin.org/get', {method: 'POST', body: 'This is a body.'})
+    const result = await cache.add(request).catch(a => a)
     console.assert(result instanceof TypeError, 'Cache.add should throw a TypeError for non-GET requests.')
   })
 
   it('Cache.add called twice with the same Request object', async () => {
-    let cache = await caches.open('v1')
-    var request = new Request('https://httpbin.org/get')
+    const cache = await caches.open('v1')
+    const request = new Request('https://httpbin.org/get')
     let result = await cache.add(request)
     console.assert(result === undefined, 'Cache.add should resolve with undefined on success.')
     result = await cache.add(request)

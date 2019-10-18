@@ -20,7 +20,7 @@ export default {
         ],
       ],
 
-      plugins: ['babel-plugin-transform-async-to-promises'],
+      plugins: [],
     }),
 
     pluginTerser(),
