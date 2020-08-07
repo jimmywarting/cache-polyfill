@@ -164,7 +164,7 @@ class Cache {
     let folder = wm(this)
     let cache = {
       cacheName: folder,
-      headers: [...res.headers],
+      headers: [...res.headers.entries()],
       status: res.status,
       statusText: res.statusText,
       body: await res.arrayBuffer(),
